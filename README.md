@@ -1,26 +1,4 @@
 
-# Define 3.0
-The official template repository for Define 3.0
-
-![DefineHack 2025 Logo](https://github.com/user-attachments/assets/8173bc16-418e-4912-b500-c6427e4ba4b6)
-
-
-
-# SwasthyaAI
-<img src="https://raw.githubusercontent.com/TejasMG12/NagpuriMacchas/main/Assets/logo.svg" alt="SwasthyaAI" width="500" />
-
-### Team Information
-- **Team Name**: NagpuriMacchas 
-- **Track**: AI in Ayush
-
-### Team Members
-| Name | Role | GitHub | LinkedIn |
-|------|------|--------|----------|
-|Tejas Gampawar |Backend and AI Integration  | [@TejasMG12](https://github.com/TejasMG12) | [Tejas Gampawar](https://www.linkedin.com/in/tejas-gampawar-463129258) |
-|Priyanshu Kumar |Backend and Frontend  | [@priyanshu0463](https://github.com/priyanshu0463) | [Priyanshu Kumar](https://www.linkedin.com/in/priyanshukp0463/) |
-|Chetali Beniwal |UI/UX Design and Frontend Integration | [@chetali-beniwal](https://github.com/chetali-beniwal) | [Chetali Beniwal](https://www.linkedin.com/in/chetali-beniwal/) |
-
-
 ## Project Details
 
 ### Overview
@@ -29,13 +7,6 @@ SwasthyaAI, an AI-powered health platform that analyses symptoms and provides pe
 Many people rely excessively on pharmaceuticals, neglecting traditional and holistic healing methods. This over-dependence weakens the body's natural functions and leads to long-term medication use, especially among the elderly. There is a lack of AI-powered healthcare systems that integrate traditional medicine (AYUSH) with modern diagnostics to provide personalized, natural remedies while ensuring timely medical intervention. Our solution aims to bridge this gap by leveraging AI to recommend holistic treatments, promote preventive care, and align with SDG Goal 3: Good Health & Well-being.
 ### Solution
 SwasthyaAI analyzes symptoms, refines diagnoses through user inputs, and suggests natural remedies, diet, and lifestyle changes for mild conditions. It recommends medical consultation for severe cases, identifying the right specialist. With real-time location services, users can find nearby doctors, clinics, and pharmacies. A personalized health profile stores medical history, allergies, and conditions, providing tailored health advice.
-
-### Demo
-[![Project Demo](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
-_Replace VIDEO_ID with your YouTube video ID or provide an alternative demo link_
-
-### Live Project
-[Project Name](https://your-project-url.com)
 
 ## Technical Implementation
 
@@ -65,7 +36,7 @@ _Replace VIDEO_ID with your YouTube video ID or provide an alternative demo link
 ### Installation 
 - Clone the repository:
 ```bash
-git clone git@github.com:TejasMG12/NagpuriMacchas.git
+git clone git@github.com:priyanshu0463/SwasthyaAI.git
 ```
 
 
@@ -117,4 +88,3 @@ npm run dev
 
 ---
 
-© Define 3.0 | [Define 3.0](https://www.define3.xyz/)

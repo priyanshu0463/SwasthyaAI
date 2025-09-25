@@ -105,7 +105,7 @@ export const sendEmail = async (
             <p><strong>SwasthyaAI</strong></p>
         </div>
         <div class="footer">
-            For any queries, please contact us at <a href="mailto:tejasgampawar@gmail.com">tejasgampawar@gmail.com</a> .
+            For any queries, please contact us at <a href="mailto:priyanshukumar@gmail.com">priyanshukumar@gmail.com</a> .
         </div>
     </div>
 </body>

@@ -16,10 +16,10 @@ This backend provides APIs for user authentication, profile management, and AI-b
 
 ```json
 {
-  "name": "Tejas gampawar",
-  "email": "tejas@gmail.com",
+  "name": "Priyanshu Kumar",
+  "email": "priyanshu@gmail.com",
   "password": "Password",
-  "location": "Manewada, Nagpur",
+  "location": "Ranchi, Jharkahnd",
   "age": 25,
   "gender": "Male"
 }
@@ -32,8 +32,8 @@ This backend provides APIs for user authentication, profile management, and AI-b
   "message": "Signup successful",
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjZTliZmRjMC03YzlhLTQyZmYtYjNkYS0yMGUzYjI2NGJmMTkiLCJlbWFpbCI6InRlamFzQGdtYWlsLmNvbSIsImlhdCI6MTc0MTQ0MDcyMSwiZXhwIjoxNzQyMDQ1NTIxfQ.1UU5B289iwrbMbMzc3lX0MPUDHxS2tzmfFt3C-_lffE",
   "user": {
-    "name": "Tejas gampawar",
-    "email": "tejas@gmail.com",
+    "name": "Priyanshu Kumar",
+    "email": "priyanshu@gmail.com",
     "password": "$2b$10$VwjuoBVkSekO3cJGE2eDlelRDFyOO4wlIvKy6iUyAeyG3Lsnv2.gG",
     "location": "Manewada, Nagpur",
     "age": 12,
@@ -62,7 +62,7 @@ This backend provides APIs for user authentication, profile management, and AI-b
 
 ```json
 {
-  "email": "tejas@gmail.com",
+  "email": "priyanshu@gmail.com",
   "password": "Password"
 }
 ```
@@ -80,8 +80,8 @@ This backend provides APIs for user authentication, profile management, and AI-b
       "medications": []
     },
     "_id": "ce9bfdc0-7c9a-42ff-b3da-20e3b264bf19",
-    "name": "Tejas gampawar",
-    "email": "tejas@gmail.com",
+    "name": "Priyanshu Kumar",
+    "email": "priyanshu@gmail.com",
     "password": "$2b$10$VwjuoBVkSekO3cJGE2eDlelRDFyOO4wlIvKy6iUyAeyG3Lsnv2.gG",
     "age": 12,
     "gender": "Male",
@@ -106,7 +106,7 @@ This backend provides APIs for user authentication, profile management, and AI-b
 
 ```json
 {
-  "email": "tejas@gmail.com",
+  "email": "priyanshu@gmail.com",
   "qtype": "doctor/remedy/describe/default"
 }
 ```
@@ -139,7 +139,7 @@ This backend provides APIs for user authentication, profile management, and AI-b
 
 ```json
 {
-  "email": "tejas@gmail.com",
+  "email": "priyanshu@gmail.com",
   "message": "fever"
 }
 ```
@@ -173,7 +173,7 @@ This backend provides APIs for user authentication, profile management, and AI-b
 **Example Request:**
 
 ```http
-GET http://localhost:5000/profile/tejas@gmail.com
+GET http://localhost:5000/profile/priyanshu@gmail.com
 ```
 
 **Response:**
@@ -187,8 +187,8 @@ GET http://localhost:5000/profile/tejas@gmail.com
       "medications": ["abc"]
     },
     "_id": "ce9bfdc0-7c9a-42ff-b3da-20e3b264bf19",
-    "name": "Tejas gampawar",
-    "email": "tejas@gmail.com",
+    "name": "Priyanshu Kumar",
+    "email": "priyanshu@gmail.com",
     "age": 12,
     "gender": "Male",
     "healthGoals": ["Want to gain weight"],
@@ -230,8 +230,8 @@ GET http://localhost:5000/profile/tejas@gmail.com
       "medications": ["abc"]
     },
     "_id": "ce9bfdc0-7c9a-42ff-b3da-20e3b264bf19",
-    "name": "Tejas gampawar",
-    "email": "tejas@gmail.com",
+    "name": "Priyanshu Kumar",
+    "email": "priyanshu@gmail.com",
     "password": "$2b$10$VwjuoBVkSekO3cJGE2eDlelRDFyOO4wlIvKy6iUyAeyG3Lsnv2.gG",
     "age": 12,
     "gender": "Male",

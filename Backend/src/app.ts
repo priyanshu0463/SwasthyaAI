@@ -49,12 +49,11 @@ app.get('/', (_req, res) => {
   res.send('Server is running.....');
 });
 
-app.listen(port, () => {
-  return console.log(`Express is listening at http://localhost:${port}`);
-});
-
 app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
 app.use("/doctor", doctorRoutes);
-
 app.use('/api', otherRoutes);
+
+app.listen(port, () => {
+  return console.log(`Express is listening at http://localhost:${port}`);
+});

@@ -2,6 +2,7 @@ import { Router } from "express";
 import puppeteer from 'puppeteer';
 import { sendEmailC } from "../controllers/email.controller";
 import { uploadFile } from "../handlers/email/email.service";
+import { getDailyHealthSuggestions } from "../controllers/cc.controller";
 
 const router = Router();
 
@@ -44,5 +45,6 @@ router.post("/scrape", async (req, res) => {
     res.json(results);
   });
 router.post("/email",uploadFile.single("file"), sendEmailC);
+router.post("/health-suggestions", getDailyHealthSuggestions);
 
 export default router;

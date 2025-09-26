@@ -186,7 +186,7 @@ const HealthSuggestions: React.FC<HealthSuggestionsProps> = ({ userId = "user@ex
         </div>
 
         <div style={styles.headerActions}>
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button style={styles.dropdownButton}>
                 <Calendar size={14} />
@@ -204,7 +204,7 @@ const HealthSuggestions: React.FC<HealthSuggestionsProps> = ({ userId = "user@ex
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
 
           <button 
             style={styles.refreshButton}

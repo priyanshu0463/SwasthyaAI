@@ -1,36 +1,64 @@
 import React, { useState, useEffect } from "react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-// import { Button } from "@/components/ui/button";
-import { ChevronDown, RefreshCw, Sparkles, Calendar, Heart } from "lucide-react";
-import { Button } from "@radix-ui/themes/dist/cjs/components/button";
+import { ChevronDown, RefreshCw, Sparkles, Calendar, Heart, TrendingUp, AlertCircle, Clock } from "lucide-react";
 
 const defaultHealthSuggestions = [
-  { icon: "🍎", title: "Eat More Fruits", description: "Fruits provide essential vitamins and antioxidants for a healthier life.", category: "nutrition" },
-  { icon: "🥤", title: "Stay Hydrated", description: "Drink at least 2 liters of water daily to keep your body refreshed and energized.", category: "hydration" },
-  { icon: "🏃", title: "Daily Jogging", description: "Jogging for 30 minutes boosts heart health, stamina, and mental clarity.", category: "exercise" },
-  { icon: "☀️", title: "Get Sunlight Exposure", description: "Morning sunlight helps in vitamin D production and improves mood.", category: "wellness" },
-  { icon: "🧘", title: "Practice Mindfulness", description: "10 minutes of meditation daily reduces stress and improves focus.", category: "mental" },
+  { icon: "🍎", title: "Eat More Fruits", description: "Fruits provide essential vitamins and antioxidants for a healthier life.", category: "nutrition", priority: "medium", timeframe: "daily" },
+  { icon: "💧", title: "Stay Hydrated", description: "Drink at least 2 liters of water daily to keep your body refreshed and energized.", category: "hydration", priority: "high", timeframe: "daily" },
+  { icon: "🏃", title: "Daily Exercise", description: "Engage in 30 minutes of physical activity to boost cardiovascular health.", category: "exercise", priority: "high", timeframe: "daily" },
+  { icon: "😴", title: "Quality Sleep", description: "Maintain 7-8 hours of consistent sleep for better recovery and mental health.", category: "sleep", priority: "high", timeframe: "daily" },
+  { icon: "🧘", title: "Practice Mindfulness", description: "10 minutes of meditation daily reduces stress and improves focus.", category: "mental", priority: "medium", timeframe: "daily" },
 ];
+
+interface HealthSuggestion {
+  icon: string;
+  title: string;
+  description: string;
+  category: string;
+  priority: string;
+  timeframe: string;
+}
 
 interface HealthSuggestionsProps {
   userId?: string;
 }
 
-const HealthSuggestions: React.FC<HealthSuggestionsProps> = ({ userId = "pk" }) => {
-  const [suggestions, setSuggestions] = useState(defaultHealthSuggestions);
+const HealthSuggestions: React.FC<HealthSuggestionsProps> = ({ userId = "user@example.com" }) => {
+  const [suggestions, setSuggestions] = useState<HealthSuggestion[]>(defaultHealthSuggestions);
   const [selectedMonth, setSelectedMonth] = useState("Jan 2025");
   const [isLoading, setIsLoading] = useState(false);
   const [isPersonalized, setIsPersonalized] = useState(false);
+  const [summary, setSummary] = useState("");
+  const [weeklyInsight, setWeeklyInsight] = useState("");
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [error, setError] = useState("");
 
   const months = [
     "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", 
-    "May 2025", "Jun 2025", "Jul 2025", "Aug 2025"
+    "May 2025", "Jun 2025", "Jul 2025", "Aug 2025",
+    "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025"
   ];
+
+  // Auto-fetch personalized suggestions on component mount
+  useEffect(() => {
+    fetchPersonalizedSuggestions();
+    fetchWeeklyInsights();
+  }, [userId]);
+
+  // Auto-refresh suggestions every 24 hours
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchPersonalizedSuggestions();
+    }, 24 * 60 * 60 * 1000); // 24 hours
+
+    return () => clearInterval(interval);
+  }, [selectedMonth, userId]);
 
   const fetchPersonalizedSuggestions = async () => {
     setIsLoading(true);
+    setError("");
+    
     try {
-      // Call your backend to get personalized suggestions based on chat history
       const response = await fetch("http://localhost:5000/doctor/health-suggestions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -42,15 +70,43 @@ const HealthSuggestions: React.FC<HealthSuggestionsProps> = ({ userId = "pk" }) 
 
       if (response.ok) {
         const data = await response.json();
-        if (data.suggestions && data.suggestions.length > 0) {
+        if (data.success && data.suggestions && data.suggestions.length > 0) {
           setSuggestions(data.suggestions);
-          setIsPersonalized(true);
+          setIsPersonalized(data.isPersonalized);
+          setSummary(data.summary || "");
+          setLastUpdated(new Date(data.generatedAt));
+        } else {
+          throw new Error("No suggestions received");
         }
+      } else {
+        throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
       console.error("Error fetching personalized suggestions:", error);
+      setError("Failed to load personalized suggestions. Showing general recommendations.");
+      setSuggestions(defaultHealthSuggestions);
+      setIsPersonalized(false);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchWeeklyInsights = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/doctor/weekly-insights", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: userId }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.insight) {
+          setWeeklyInsight(data.insight);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching weekly insights:", error);
     }
   };
 
@@ -61,6 +117,8 @@ const HealthSuggestions: React.FC<HealthSuggestionsProps> = ({ userId = "pk" }) 
       exercise: "#f59e0b",
       wellness: "#f97316",
       mental: "#8b5cf6",
+      sleep: "#6366f1",
+      preventive: "#06b6d4",
       default: "#64748b"
     };
     return colors[category as keyof typeof colors] || colors.default;
@@ -73,9 +131,29 @@ const HealthSuggestions: React.FC<HealthSuggestionsProps> = ({ userId = "pk" }) 
       exercise: "💪",
       wellness: "🌟",
       mental: "🧠",
+      sleep: "😴",
+      preventive: "🛡️",
       default: "✨"
     };
     return icons[category as keyof typeof icons] || icons.default;
+  };
+
+  const getPriorityColor = (priority: string) => {
+    const colors = {
+      high: "#ef4444",
+      medium: "#f59e0b", 
+      low: "#22c55e"
+    };
+    return colors[priority as keyof typeof colors] || colors.medium;
+  };
+
+  const getPriorityIcon = (priority: string) => {
+    const icons = {
+      high: "🔥",
+      medium: "⭐", 
+      low: "💡"
+    };
+    return icons[priority as keyof typeof icons] || icons.medium;
   };
 
   return (
@@ -95,20 +173,26 @@ const HealthSuggestions: React.FC<HealthSuggestionsProps> = ({ userId = "pk" }) 
           </div>
           <p style={styles.subtitle}>
             {isPersonalized 
-              ? "Tailored recommendations based on your health conversations" 
+              ? "Tailored recommendations based on your health conversations with our AI doctor" 
               : "General wellness tips to improve your daily health"
             }
           </p>
+          {lastUpdated && (
+            <p style={styles.lastUpdated}>
+              <Clock size={12} />
+              Last updated: {lastUpdated.toLocaleString()}
+            </p>
+          )}
         </div>
 
         <div style={styles.headerActions}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" style={styles.dropdownButton}>
+              <button style={styles.dropdownButton}>
                 <Calendar size={14} />
                 {selectedMonth} 
                 <ChevronDown size={14} />
-              </Button>
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               {months.map((month) => (
@@ -122,17 +206,46 @@ const HealthSuggestions: React.FC<HealthSuggestionsProps> = ({ userId = "pk" }) 
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button 
-            variant="outline" 
+          <button 
             style={styles.refreshButton}
             onClick={fetchPersonalizedSuggestions}
             disabled={isLoading}
           >
             <RefreshCw size={14} className={isLoading ? "animate-spin" : ""} />
             {isLoading ? "Loading..." : "Get AI Tips"}
-          </Button>
+          </button>
         </div>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div style={styles.errorBanner}>
+          <AlertCircle size={16} />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {/* AI Summary */}
+      {summary && isPersonalized && (
+        <div style={styles.summaryCard}>
+          <div style={styles.summaryHeader}>
+            <TrendingUp size={16} />
+            <h3>Your Health Insights</h3>
+          </div>
+          <p>{summary}</p>
+        </div>
+      )}
+
+      {/* Weekly Insights */}
+      {weeklyInsight && (
+        <div style={styles.insightCard}>
+          <div style={styles.insightHeader}>
+            <Sparkles size={16} />
+            <h3>Weekly Health Insight</h3>
+          </div>
+          <p>{weeklyInsight}</p>
+        </div>
+      )}
 
       {/* Suggestions Grid */}
       <div style={styles.suggestionsList}>
@@ -141,7 +254,8 @@ const HealthSuggestions: React.FC<HealthSuggestionsProps> = ({ userId = "pk" }) 
             key={index} 
             style={{
               ...styles.suggestionItem,
-              background: `linear-gradient(135deg, ${getCategoryColor(item.category)}08, ${getCategoryColor(item.category)}03)`
+              background: `linear-gradient(135deg, ${getCategoryColor(item.category)}08, ${getCategoryColor(item.category)}03)`,
+              borderLeft: `4px solid ${getPriorityColor(item.priority)}`
             }}
           >
             <div 
@@ -157,31 +271,46 @@ const HealthSuggestions: React.FC<HealthSuggestionsProps> = ({ userId = "pk" }) 
             <div style={styles.contentContainer}>
               <div style={styles.titleRow}>
                 <h3 style={styles.suggestionTitle}>{item.title}</h3>
-                <span 
-                  style={{
-                    ...styles.categoryBadge,
-                    backgroundColor: `${getCategoryColor(item.category)}20`,
-                    color: getCategoryColor(item.category)
-                  }}
-                >
-                  {getCategoryIcon(item.category)} {item.category}
-                </span>
+                <div style={styles.badgeContainer}>
+                  <span 
+                    style={{
+                      ...styles.priorityBadge,
+                      backgroundColor: `${getPriorityColor(item.priority)}20`,
+                      color: getPriorityColor(item.priority)
+                    }}
+                  >
+                    {getPriorityIcon(item.priority)} {item.priority}
+                  </span>
+                  <span 
+                    style={{
+                      ...styles.categoryBadge,
+                      backgroundColor: `${getCategoryColor(item.category)}20`,
+                      color: getCategoryColor(item.category)
+                    }}
+                  >
+                    {getCategoryIcon(item.category)} {item.category}
+                  </span>
+                </div>
               </div>
               <p style={styles.suggestionDescription}>{item.description}</p>
+              <div style={styles.timeframe}>
+                <Clock size={12} />
+                <span>Recommended: {item.timeframe}</span>
+              </div>
             </div>
 
-            <div style={styles.actionButton}>
-              <Button 
-                variant="ghost" 
-                size="sm"
+            {/* <div style={styles.actionButton}>
+              <button 
                 style={{
+                  ...styles.tryButton,
                   color: getCategoryColor(item.category),
-                  backgroundColor: `${getCategoryColor(item.category)}10`
+                  backgroundColor: `${getCategoryColor(item.category)}10`,
+                  border: `1px solid ${getCategoryColor(item.category)}30`
                 }}
               >
                 Try It
-              </Button>
-            </div>
+              </button>
+            </div> */}
           </div>
         ))}
       </div>
@@ -189,8 +318,13 @@ const HealthSuggestions: React.FC<HealthSuggestionsProps> = ({ userId = "pk" }) 
       {/* Footer */}
       <div style={styles.footer}>
         <p style={styles.footerText}>
-          💡 Tip: Chat with our AI doctor to get more personalized health recommendations
+          💡 Tip: Keep chatting with our AI doctor to get more accurate and personalized health recommendations
         </p>
+        {isPersonalized && (
+          <p style={styles.footerSubtext}>
+            These suggestions are generated based on your recent health conversations and profile
+          </p>
+        )}
       </div>
     </div>
   );
@@ -215,15 +349,18 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "flex-start",
     marginBottom: "24px",
     gap: "20px",
+    flexWrap: "wrap",
   },
   titleSection: {
     flex: 1,
+    minWidth: "300px",
   },
   titleContainer: {
     display: "flex",
     alignItems: "center",
     gap: "12px",
     marginBottom: "8px",
+    flexWrap: "wrap",
   },
   title: {
     fontSize: "24px",
@@ -247,11 +384,21 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#64748b",
     margin: 0,
     lineHeight: "1.5",
+    marginBottom: "4px",
+  },
+  lastUpdated: {
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+    fontSize: "12px",
+    color: "#94a3b8",
+    margin: 0,
   },
   headerActions: {
     display: "flex",
     gap: "12px",
     alignItems: "center",
+    flexWrap: "wrap",
   },
   dropdownButton: {
     display: "flex",
@@ -265,6 +412,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: "500",
     color: "#475569",
     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+    cursor: "pointer",
   },
   refreshButton: {
     display: "flex",
@@ -277,6 +425,49 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "14px",
     fontWeight: "500",
     color: "#3b82f6",
+    cursor: "pointer",
+  },
+  errorBanner: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "12px 16px",
+    backgroundColor: "#fef2f2",
+    border: "1px solid #fecaca",
+    borderRadius: "12px",
+    color: "#dc2626",
+    fontSize: "14px",
+    marginBottom: "16px",
+  },
+  summaryCard: {
+    padding: "16px",
+    backgroundColor: "#f8fafc",
+    borderRadius: "12px",
+    marginBottom: "20px",
+    border: "1px solid #e2e8f0",
+  },
+  summaryHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "8px",
+    color: "#1e293b",
+    fontWeight: "600",
+  },
+  insightCard: {
+    padding: "16px",
+    backgroundColor: "#fefbf3",
+    borderRadius: "12px",
+    marginBottom: "20px",
+    border: "1px solid #fed7aa",
+  },
+  insightHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "8px",
+    color: "#ea580c",
+    fontWeight: "600",
   },
   suggestionsList: {
     display: "flex",
@@ -311,10 +502,11 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   titleRow: {
     display: "flex",
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "space-between",
     marginBottom: "8px",
     gap: "12px",
+    flexWrap: "wrap",
   },
   suggestionTitle: {
     fontSize: "18px",
@@ -322,11 +514,24 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#1e293b",
     margin: 0,
   },
-  categoryBadge: {
-    fontSize: "12px",
+  badgeContainer: {
+    display: "flex",
+    gap: "8px",
+    flexWrap: "wrap",
+  },
+  priorityBadge: {
+    fontSize: "11px",
     fontWeight: "500",
-    padding: "4px 8px",
-    borderRadius: "8px",
+    padding: "2px 6px",
+    borderRadius: "6px",
+    textTransform: "capitalize",
+    whiteSpace: "nowrap",
+  },
+  categoryBadge: {
+    fontSize: "11px",
+    fontWeight: "500",
+    padding: "2px 6px",
+    borderRadius: "6px",
     textTransform: "capitalize",
     whiteSpace: "nowrap",
   },
@@ -335,9 +540,25 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#64748b",
     margin: 0,
     lineHeight: "1.5",
+    marginBottom: "8px",
+  },
+  timeframe: {
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+    fontSize: "12px",
+    color: "#94a3b8",
   },
   actionButton: {
     flexShrink: 0,
+  },
+  tryButton: {
+    padding: "8px 16px",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontWeight: "500",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
   },
   footer: {
     marginTop: "24px",
@@ -350,5 +571,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "14px",
     color: "#64748b",
     margin: 0,
+    marginBottom: "4px",
+  },
+  footerSubtext: {
+    fontSize: "12px",
+    color: "#94a3b8",
+    margin: 0,
+    fontStyle: "italic",
   },
 };
